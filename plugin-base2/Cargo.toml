@@ -1,0 +1,11 @@
+[package]
+name = "base2"
+version = "0.0.0"
+authors = ["Erik Zscheile <erik.zscheile@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+zxcalc-common = { path = "../common" }
+
+[lib]
+crate-type = [ "cdylib" ]

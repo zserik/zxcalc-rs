@@ -14,4 +14,15 @@ termion = "1.5"
 zxcalc-common = { path = "common" }
 
 [workspace]
-members = [ "common" ]
+members = [
+  "common",
+  "plugin-base10",
+  "plugin-base2",
+  "plugin-dB",
+  "plugin-day",
+  "plugin-hour",
+  "plugin-min",
+  "plugin-percent",
+  "plugin-raw",
+  "plugin-sec"
+]

@@ -40,11 +40,11 @@ fn main() {
         let mut breakout = false;
 
         for i in parse_line(&curin, value) {
-            let mut resolved_clp: Option<std::borrow::Cow<str>> = {
+            let mut resolved_clp: Option<String> = {
                 match &i {
                     XNode::Calc(_, clp, _) | XNode::CalcInv(clp) | XNode::SetScale(clp, _) => {
                         if let Some(clp2) = cpm.resolve(&clp) {
-                            Some(clp2)
+                            Some(clp2.to_string())
                         } else {
                             eprintln!("\tERROR: {}: unable to resolve plugin name", &clp);
                             got_error = true;
@@ -108,7 +108,7 @@ fn main() {
                     if scval > 0.0 && scval < 1.0 {
                         scval = -(1.0 / scval);
                     }
-                    cpm.set_scale(&resolved_clp.take().unwrap(), scval);
+                    cpm.set_scale(&resolved_clp.take().unwrap(), scval.round() as isize);
                 }
 
                 XNode::Assign(varname) => {
