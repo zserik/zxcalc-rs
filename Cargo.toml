@@ -15,3 +15,7 @@ thiserror = "1.0"
 [dependencies.phf]
 version = "0.8"
 features = ["macros"]
+
+[profile.release]
+lto = "thin"
+panic = "abort"

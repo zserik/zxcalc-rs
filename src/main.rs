@@ -59,7 +59,6 @@ fn main() {
                 }
             };
 
-            eprintln!("run {:?}", i);
             match i {
                 XNode::Error(err) => {
                     eprintln!("\tERROR: {:?}", err);
@@ -119,7 +118,6 @@ fn main() {
                     }
                 }
             }
-            eprintln!("\t-> {}", value);
         }
 
         if !got_error {
