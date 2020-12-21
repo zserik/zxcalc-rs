@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use crate::plugins::Plugin;
+use std::collections::HashMap;
 
 pub struct CalcPluginManager {
     plgs: HashMap<&'static str, (Plugin, i64)>,
@@ -8,7 +8,10 @@ pub struct CalcPluginManager {
 impl CalcPluginManager {
     pub fn new() -> Self {
         Self {
-            plgs: crate::plugins::PLUGINS.entries().map(|(&k, &v)| (k, (v, 1))).collect(),
+            plgs: crate::plugins::PLUGINS
+                .entries()
+                .map(|(&k, &v)| (k, (v, 1)))
+                .collect(),
         }
     }
 

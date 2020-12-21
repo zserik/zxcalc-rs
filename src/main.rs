@@ -36,7 +36,7 @@ fn main() {
     let mut cpm = cpm_::CalcPluginManager::new();
     let mut vars = std::collections::HashMap::<String, f64>::new();
 
-    while let Some(curin) = getline_wprompt("zxcalc > ") {
+    while let Some(curin) = getline_wprompt("zxcalc $ ") {
         let mut got_error = false;
         let mut breakout = false;
 
@@ -64,11 +64,13 @@ fn main() {
                     eprintln!("\tERROR: {:?}", err);
                     got_error = true;
                 }
-                XNode::Cmd(cmd) => match &cmd[..] {
-                    "exit" | "quit" => breakout = true,
-                    "list-loaded-plugins" => cpm.list_loaded_plugins(),
-                    "help" => {
-                        println!("  --COMMANDS--
+                XNode::Cmd(cmd) => {
+                    match &cmd[..] {
+                        "exit" | "quit" => breakout = true,
+                        "list-loaded-plugins" => cpm.list_loaded_plugins(),
+                        "help" => {
+                            println!(
+                                "  --COMMANDS--
 \tquit\t\t\t\texit this program
 \thelp\t\t\t\tprint this text
 \tlist-loaded-plugins\t\tprint list of currently loaded plugins
@@ -79,10 +81,13 @@ fn main() {
 \tcommands above to have the following format:
 \t\t(('+'|'-'|'*'|'/') PLG ['+'|'-']NUM|':' PLG|'=' VAR)*
 
-");
+"
+                            );
+                        }
+                        _ => eprintln!("\tERROR: unknown command {}\n", cmd),
                     }
-                    _ => eprintln!("\tERROR: unknown command {}\n", cmd),
-                },
+                    got_error = true;
+                }
 
                 XNode::SetScale(clp, _) => {
                     // we don't want a "\t0\n" line after this
