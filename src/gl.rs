@@ -7,6 +7,9 @@ fn getline() -> Option<String> {
     for c in stdin.keys() {
         match c.ok()? {
             Key::Char('\n') => break,
+            Key::Backspace => {
+                curin.pop();
+            }
             Key::Ctrl('d') => {
                 if curin.is_empty() {
                     return None;
