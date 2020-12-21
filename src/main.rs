@@ -1,19 +1,8 @@
-#[macro_use]
-extern crate failure;
-extern crate hashbrown;
-#[macro_use]
-extern crate lazy_static;
-extern crate libloading;
-extern crate sortedvec;
-extern crate termion;
-extern crate zxcalc_common;
-
 mod scv;
 #[macro_use]
 mod ssv;
 
 mod cpm_;
-mod gl;
 mod parser;
 
 fn eval_op(op: char, mut y: f64, x: f64) -> f64 {
@@ -22,10 +11,21 @@ fn eval_op(op: char, mut y: f64, x: f64) -> f64 {
         '-' => y -= x,
         '*' => y *= x,
         '/' => y /= x,
-        '%' => y = zxcalc_common::zx_modulo(y, x),
+        '%' => y = zxcalc_plugins::zx_modulo(y, x),
         _ => {}
     }
     y
+}
+
+fn getline_wprompt(prompt: &str) -> Option<String> {
+    if atty::is(atty::Stream::Stdin) && atty::is(atty::Stream::Stdout) {
+        use std::io::Write;
+        let mut stdout = std::io::stdout();
+        write!(stdout, "{}", prompt).ok()?;
+        stdout.flush().ok()?;
+    }
+    let txt: String = text_io::read!("{}\n");
+    Some(txt.trim().to_string())
 }
 
 use parser::*;
@@ -33,28 +33,13 @@ use parser::*;
 fn main() {
     let mut value: f64 = 0.0;
     let mut cpm = cpm_::CalcPluginManager::new();
-    let mut vars = hashbrown::HashMap::<String, f64>::new();
+    let mut vars = std::collections::HashMap::<String, f64>::new();
 
-    while let Some(curin) = gl::getline_wprompt("zxcalc > ") {
+    while let Some(curin) = getline_wprompt("zxcalc > ") {
         let mut got_error = false;
         let mut breakout = false;
 
         for i in parse_line(&curin, value) {
-            let mut resolved_clp: Option<String> = {
-                match &i {
-                    XNode::Calc(_, clp, _) | XNode::CalcInv(clp) | XNode::SetScale(clp, _) => {
-                        if let Some(clp2) = cpm.resolve(&clp) {
-                            Some(clp2.to_string())
-                        } else {
-                            eprintln!("\tERROR: {}: unable to resolve plugin name", &clp);
-                            got_error = true;
-                            break;
-                        }
-                    }
-                    _ => None,
-                }
-            };
-
             let mut resolved_val: Option<f64> = {
                 match &i {
                     XNode::Calc(_, _, xval) | XNode::SetScale(_, xval) => match xval {
@@ -75,10 +60,7 @@ fn main() {
 
             match i {
                 XNode::Error(err) => {
-                    eprintln!("\tERROR:");
-                    for cause in err.iter_chain() {
-                        eprintln!("< {}", cause);
-                    }
+                    eprintln!("\tERROR: {:?}", err);
                     got_error = true;
                 }
                 XNode::Cmd(cmd) => match &cmd[..] {
@@ -101,34 +83,37 @@ fn main() {
                     _ => eprintln!("\tERROR: unknown command {}\n", cmd),
                 },
 
-                XNode::SetScale(_, _) => {
+                XNode::SetScale(clp, _) => {
                     // we don't want a "\t0\n" line after this
                     got_error = true;
                     let mut scval = resolved_val.take().unwrap();
                     if scval > 0.0 && scval < 1.0 {
                         scval = -(1.0 / scval);
                     }
-                    cpm.set_scale(&resolved_clp.take().unwrap(), scval.round() as isize);
+                    cpm.set_scale(&clp, scval.round() as i64);
                 }
 
                 XNode::Assign(varname) => {
                     vars.insert(varname, value);
                 }
 
-                XNode::Calc(op, _, _) => {
-                    let clp = resolved_clp.take().unwrap();
+                XNode::Calc(op, clp, _) => {
                     let xval = resolved_val.take().unwrap();
                     if let Some(res) = cpm.calc(&clp, xval) {
                         value = eval_op(op, value, res);
                     } else {
                         got_error = true;
-                        eprintln!("\tERROR: {} {}: calc failed", &clp, xval);
+                        eprintln!("\tERROR: {}: calc failed", &clp);
                     }
                 }
 
-                _ => {
-                    got_error = true;
-                    eprintln!("\tERROR: unimplemented operation");
+                XNode::CalcInv(clp) => {
+                    if let Some(res) = cpm.calcinv(&clp, value) {
+                        value = res;
+                    } else {
+                        got_error = true;
+                        eprintln!("\tERROR: {}: calcinv failed", &clp);
+                    }
                 }
             }
         }

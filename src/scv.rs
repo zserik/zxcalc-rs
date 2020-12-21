@@ -2,7 +2,7 @@ use sortedvec::sortedvec;
 
 sortedvec! {
     pub struct SCV {
-        fn key_deriv(x: &char) -> char {
+        fn derive_key(x: &char) -> char {
             *x
         }
     }

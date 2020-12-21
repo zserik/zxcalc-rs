@@ -1,0 +1,11 @@
+[package]
+name = "zxcalc-plugins"
+version = "0.0.0"
+authors = ["Erik Zscheile <zseri.devel@ytrizja.de>"]
+edition = "2018"
+
+[dependencies]
+
+[dependencies.phf]
+version = "0.8"
+features = ["macros"]

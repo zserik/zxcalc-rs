@@ -15,24 +15,24 @@ pub enum XNode {
     CalcInv(PluginName),
     Cmd(String),
     SetScale(PluginName, XValue),
-    Error(failure::Error),
+    Error(anyhow::Error),
 }
 
-#[derive(Debug, Fail)]
+#[derive(Debug, thiserror::Error)]
 pub enum XParseError {
-    #[fail(display = "invalid invocation of '{}': USAGE: {} {}", cmd, cmd, usage)]
+    #[error("invalid invocation of '{}': USAGE: {} {}", cmd, cmd, usage)]
     InvalidInvocationError {
         cmd: &'static str,
         usage: &'static str,
     },
 
-    #[fail(display = "expected one of {} instead of '{}'", expected, got)]
+    #[error("expected one of {} instead of '{}'", expected, got)]
     UnexpectedTokenError { expected: &'static str, got: String },
 
-    #[fail(display = "unexpected EOL while looking for {}", expected)]
+    #[error("unexpected EOL while looking for {}", expected)]
     UnexpectedEOLWhileError { expected: &'static str },
 
-    #[fail(display = "token no. {} is unexpected empty", pos)]
+    #[error("token no. {} is unexpected empty", pos)]
     UnexpectedEmptyError { pos: usize },
 }
 
@@ -45,7 +45,7 @@ macro_rules! xnode_from_perror {
 use crate::scv::{scv_contains, scv_create, SCV};
 use crate::ssv::{ssv_contains, SSV};
 
-lazy_static! {
+lazy_static::lazy_static! {
     static ref CMDS2PASSUP: SSV = ssv_create!("exit", "help", "list-loaded-plugins", "quit");
     static ref ALL_OPERATORS: SCV = scv_create("+-*/:=");
 }

@@ -10,7 +10,7 @@ fn ssv_strhash(x: &str) -> u64 {
 
 sortedvec! {
     pub struct SSV {
-        fn key_deriv(x: &String) -> u64 {
+        fn derive_key(x: &String) -> u64 {
             ssv_strhash(x)
         }
     }
