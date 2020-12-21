@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use zxcalc_plugins::Plugin;
+use crate::plugins::Plugin;
 
 pub struct CalcPluginManager {
     plgs: HashMap<&'static str, (Plugin, i64)>,
@@ -8,7 +8,7 @@ pub struct CalcPluginManager {
 impl CalcPluginManager {
     pub fn new() -> Self {
         Self {
-            plgs: zxcalc_plugins::PLUGINS.entries().map(|(&k, &v)| (k, (v, 1))).collect(),
+            plgs: crate::plugins::PLUGINS.entries().map(|(&k, &v)| (k, (v, 1))).collect(),
         }
     }
 
@@ -29,11 +29,11 @@ impl CalcPluginManager {
 
     pub fn calc(&self, plgn: &str, xval: f64) -> Option<f64> {
         let plg = self.plgs.get(plgn)?;
-        Some((plg.0.calc)(xval) * zxcalc_plugins::scaling::calc(plg.1))
+        Some((plg.0.calc)(xval) * crate::plugins::scaling::calc(plg.1))
     }
 
     pub fn calcinv(&self, plgn: &str, xval: f64) -> Option<f64> {
         let plg = self.plgs.get(plgn)?;
-        Some((plg.0.calcinv)(xval / zxcalc_plugins::scaling::calc(plg.1)))
+        Some((plg.0.calcinv)(xval / crate::plugins::scaling::calc(plg.1)))
     }
 }

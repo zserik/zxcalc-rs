@@ -4,6 +4,7 @@ mod ssv;
 
 mod cpm_;
 mod parser;
+mod plugins;
 
 fn eval_op(op: char, mut y: f64, x: f64) -> f64 {
     match op {
@@ -11,7 +12,7 @@ fn eval_op(op: char, mut y: f64, x: f64) -> f64 {
         '-' => y -= x,
         '*' => y *= x,
         '/' => y /= x,
-        '%' => y = zxcalc_plugins::zx_modulo(y, x),
+        '%' => y = plugins::zx_modulo(y, x),
         _ => {}
     }
     y
@@ -58,6 +59,7 @@ fn main() {
                 }
             };
 
+            eprintln!("run {:?}", i);
             match i {
                 XNode::Error(err) => {
                     eprintln!("\tERROR: {:?}", err);
@@ -109,6 +111,7 @@ fn main() {
 
                 XNode::CalcInv(clp) => {
                     if let Some(res) = cpm.calcinv(&clp, value) {
+                        println!("calcinv {} {} -> {}", clp, value, res);
                         value = res;
                     } else {
                         got_error = true;
@@ -116,6 +119,7 @@ fn main() {
                     }
                 }
             }
+            eprintln!("\t-> {}", value);
         }
 
         if !got_error {

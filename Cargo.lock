@@ -270,15 +270,8 @@ dependencies = [
  "anyhow",
  "atty",
  "lazy_static",
+ "phf",
  "sortedvec",
  "text_io",
  "thiserror",
- "zxcalc-plugins",
-]
-
-[[package]]
-name = "zxcalc-plugins"
-version = "0.0.0"
-dependencies = [
- "phf",
 ]
