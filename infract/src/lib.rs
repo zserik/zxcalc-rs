@@ -57,10 +57,6 @@ impl Fraction {
 
     fn rest_mul(&mut self, mut n2: i128, mut d2: i128) {
         let (mut n1, mut d1): (i128, i128) = (self.numerat.into(), self.denominat.get().into());
-        // we reduce the fractions as much as possible before-hand,
-        // to avoid many cases of overflows...
-        Self::normalize_inner(&mut n1, &mut d2);
-        Self::normalize_inner(&mut n2, &mut d1);
         n1 *= n2;
         d1 *= d2;
         Self::normalize_inner(&mut n1, &mut d1);
