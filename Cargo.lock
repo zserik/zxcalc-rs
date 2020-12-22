@@ -44,6 +44,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "infract"
+version = "0.0.0"
+
+[[package]]
 name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -269,6 +273,7 @@ version = "0.0.1"
 dependencies = [
  "anyhow",
  "atty",
+ "infract",
  "lazy_static",
  "phf",
  "sortedvec",

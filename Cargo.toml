@@ -1,3 +1,9 @@
+[workspace]
+members = [
+    ".",
+    "infract",
+]
+
 [package]
 name = "zxcalc"
 version = "0.0.1"
@@ -7,6 +13,7 @@ edition = "2018"
 [dependencies]
 anyhow = "1.0"
 atty = "0.2"
+infract = { path = "infract" }
 lazy_static = "1.4"
 sortedvec = "0.5"
 text_io = "0.1"
